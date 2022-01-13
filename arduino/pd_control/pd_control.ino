@@ -1,12 +1,3 @@
-/*
-  Project Name: TM1638
-  File: TM1638plus_HELLOWORLD_TEST_Model1.ino
-  Description: A demo file library for TM1638 module(LED & KEY). Works on Model 1 and 3
-  Carries out series most basic test , "hello world" helo wrld
-  Author: Gavin Lyons.
-  Created: feb 2020
-  URL: https://github.com/gavinlyonsrepo/TM1638plus
-*/
 
 #include <TM1638plus.h> //include the library
 
@@ -27,6 +18,6 @@ void setup()
 
 void loop()
 {
-  tm.displayText("12349876");
+  tm.displayText("12349879");
   delay(50);
 }
