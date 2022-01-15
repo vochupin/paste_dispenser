@@ -18,6 +18,6 @@ void setup()
 
 void loop()
 {
-  tm.displayText("87654321");
+  tm.displayText("87dddd78");
   delay(50);
 }
