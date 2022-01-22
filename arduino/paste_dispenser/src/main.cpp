@@ -29,9 +29,9 @@ TM1638plus tm(STROBE_TM, CLOCK_TM , DIO_TM, high_freq);
 
 char buffer[40];
 
-int delay1 = 50;
-int delay2 = 10;
-int delay3 = 50;
+uint16_t pressureDelay = 50;
+uint16_t pauseDelay = 10;
+uint16_t atmoDelay = 50;
 
 uint8_t menuState = MST_PRESSURE_DELAY;
 
@@ -72,22 +72,28 @@ void showMenu() {
     menuState = MST_ATMO_DELAY;
   }
 
+  uint16_t currentMenuValue = 0;
+
   const char* menuPrefix = "???";
   switch (menuState)
   {
   case MST_PRESSURE_DELAY:
     menuPrefix = "Pd ";
+    currentMenuValue = pressureDelay;
     break;
   case MST_PAUSE:
     menuPrefix = "PA ";
+    currentMenuValue = pauseDelay;
     break;
   case MST_ATMO_DELAY:
     menuPrefix = "Ad ";
+    currentMenuValue = atmoDelay;
     break;
   }
 
-  sprintf(buffer, "%s%d", menuPrefix, btns);
+  sprintf(buffer, "%s%05d", menuPrefix, currentMenuValue);
 
   tm.displayText(buffer);
+  
   delay(100);
 }
