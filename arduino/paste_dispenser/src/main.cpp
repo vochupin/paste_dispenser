@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <TM1638plus.h> //include the library
+#include "settings.h"
 
 //STR2INT errors
 #define STR2INT_SUCCESS         0
