@@ -54,8 +54,7 @@ uint16_t currentMenuValue = 0;
 uint8_t menuState = MST_PRESSURE_DELAY;
 uint8_t oldBtns = 0;
 
-void setup()
-{
+void setup() {
   pinMode(PRESSURE_RELAY, OUTPUT);
   pinMode(ATMO_RELAY, OUTPUT);
 
@@ -67,29 +66,14 @@ void setup()
   settings = readSettings();
 }
 
-void loop()
-{
+void loop() {
   showMenu();
-
-  // digitalWrite(PRESSURE_RELAY, HIGH);
-  // delay(1000);
-  // digitalWrite(PRESSURE_RELAY, LOW);
-
-  // delay(500);
-
-  // digitalWrite(ATMO_RELAY, HIGH);
-  // delay(1000);
-  // digitalWrite(ATMO_RELAY, LOW);
-
-  // delay(500);
 }
 
-void showMenu()
-{
+void showMenu() {
   const char *menuPrefix = "???";
 
-  switch (menuState)
-  {
+  switch (menuState) {
   case MST_PRESSURE_DELAY:
     menuPrefix = "Pd ";
     currentMenuValue = settings->pressureDelay;
@@ -106,45 +90,35 @@ void showMenu()
 
   uint8_t btns = tm.readButtons();
 
-  if (oldBtns == 0)
-  {
-    if (btns & KEY_PRESSURE_DELAY)
-    {
+  if (oldBtns == 0) {
+    if (btns & KEY_PRESSURE_DELAY) {
       menuState = MST_PRESSURE_DELAY;
       currentMenuValue = settings->pressureDelay;
     }
-    else if (btns & KEY_PAUSE)
-    {
+    else if (btns & KEY_PAUSE) {
       menuState = MST_PAUSE;
       currentMenuValue = settings->pauseDelay;
     }
-    else if (btns & KEY_ATMO_DELAY)
-    {
+    else if (btns & KEY_ATMO_DELAY) {
       menuState = MST_ATMO_DELAY;
       currentMenuValue = settings->atmoDelay;
     }
-    else if (btns & KEY_10_5)
-    {
+    else if (btns & KEY_10_5) {
       changeDecimalPlace(5);
       updateSettingsFromCurrentValue();
     }
-    else if (btns & KEY_10_4)
-    {
+    else if (btns & KEY_10_4) {
       changeDecimalPlace(4);
       updateSettingsFromCurrentValue();
-    }
-    else if (btns & KEY_10_3)
-    {
+    } else if (btns & KEY_10_3) {
       changeDecimalPlace(3);
       updateSettingsFromCurrentValue();
     }
-    else if (btns & KEY_10_2)
-    {
+    else if (btns & KEY_10_2) {
       changeDecimalPlace(2);
       updateSettingsFromCurrentValue();
     }
-    else if (btns & KEY_10_1)
-    {
+    else if (btns & KEY_10_1) {
       changeDecimalPlace(1);
       updateSettingsFromCurrentValue();
     }
@@ -158,18 +132,15 @@ void showMenu()
   delay(100);
 }
 
-void changeDecimalPlace(uint8_t place)
-{
+void changeDecimalPlace(uint8_t place) {
   sprintf(buffer, "%05u", currentMenuValue);
 
   char symbol = buffer[5 - place];
 
-  if (symbol == '9')
-  {
+  if (symbol == '9') {
     symbol = '0';
   }
-  else
-  {
+  else {
     symbol++;
   }
 
@@ -177,24 +148,20 @@ void changeDecimalPlace(uint8_t place)
 
   uint16_t out = 0;
   str2int_errno resultCode = str2uint16(&out, buffer);
-  if (resultCode == STR2INT_SUCCESS)
-  {
+  if (resultCode == STR2INT_SUCCESS) {
     currentMenuValue = out;
   }
-  else if (resultCode == STR2INT_OVERFLOW)
-  {
+  else if (resultCode == STR2INT_OVERFLOW) {
     buffer[5 - place] = '0';
     resultCode = str2uint16(&out, buffer);
 
-    if (resultCode == STR2INT_SUCCESS)
-    {
+    if (resultCode == STR2INT_SUCCESS) {
       currentMenuValue = out;
     }
   }
 }
 
-void updateSettingsFromCurrentValue()
-{
+void updateSettingsFromCurrentValue() {
   switch (menuState) {
   case MST_PRESSURE_DELAY:
     settings->pressureDelay = currentMenuValue;
@@ -209,8 +176,7 @@ void updateSettingsFromCurrentValue()
   writeSettings();
 }
 
-str2int_errno str2uint16(uint16_t *out, char *s)
-{
+str2int_errno str2uint16(uint16_t *out, char *s) {
   char *end;
   if (s[0] == '\0' || isspace(s[0]))
     return STR2INT_INCONVERTIBLE;
