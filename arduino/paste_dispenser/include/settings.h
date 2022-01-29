@@ -2,6 +2,6 @@
 
 #define SETTINGS_MODULE
 
-
+void readSettings();
 
 #endif

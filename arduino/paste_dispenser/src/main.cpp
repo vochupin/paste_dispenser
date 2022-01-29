@@ -64,6 +64,8 @@ void setup() {
   digitalWrite(ATMO_RELAY, LOW);
 
   tm.displayBegin();
+
+  readSettings();
 }
 
 void loop() {
