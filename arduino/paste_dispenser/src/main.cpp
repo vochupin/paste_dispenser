@@ -38,7 +38,7 @@ typedef uint8_t str2int_errno;
 bool high_freq = false; // default false, If using a high freq CPU > ~100 MHZ set to true.
 
 void showMenu();
-void updateFromCurrentValue();
+void updateSettingsFromCurrentValue();
 void changeDecimalPlace(uint8_t place);
 str2int_errno str2uint16(uint16_t *out, char *s);
 
@@ -126,27 +126,27 @@ void showMenu()
     else if (btns & KEY_10_5)
     {
       changeDecimalPlace(5);
-      updateFromCurrentValue();
+      updateSettingsFromCurrentValue();
     }
     else if (btns & KEY_10_4)
     {
       changeDecimalPlace(4);
-      updateFromCurrentValue();
+      updateSettingsFromCurrentValue();
     }
     else if (btns & KEY_10_3)
     {
       changeDecimalPlace(3);
-      updateFromCurrentValue();
+      updateSettingsFromCurrentValue();
     }
     else if (btns & KEY_10_2)
     {
       changeDecimalPlace(2);
-      updateFromCurrentValue();
+      updateSettingsFromCurrentValue();
     }
     else if (btns & KEY_10_1)
     {
       changeDecimalPlace(1);
-      updateFromCurrentValue();
+      updateSettingsFromCurrentValue();
     }
   }
 
@@ -193,10 +193,9 @@ void changeDecimalPlace(uint8_t place)
   }
 }
 
-void updateFromCurrentValue()
+void updateSettingsFromCurrentValue()
 {
-  switch (menuState)
-  {
+  switch (menuState) {
   case MST_PRESSURE_DELAY:
     settings->pressureDelay = currentMenuValue;
     break;
@@ -207,6 +206,7 @@ void updateFromCurrentValue()
     settings->atmoDelay = currentMenuValue;
     break;
   }
+  writeSettings();
 }
 
 str2int_errno str2uint16(uint16_t *out, char *s)

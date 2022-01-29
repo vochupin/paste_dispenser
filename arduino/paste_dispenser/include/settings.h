@@ -22,5 +22,7 @@ typedef struct {
 
 Settings* readSettings();
 uint16_t readEepromUInt16(int adr);
+void writeEepromUInt16(int adr, uint16_t value);
+void writeSettings();
 
 #endif
