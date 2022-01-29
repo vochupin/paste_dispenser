@@ -151,8 +151,16 @@ void changeDecimalPlace(uint8_t place) {
   buffer[5 - place] = symbol;
 
   uint16_t out = 0;
-  if (str2uint16(&out, buffer) == STR2INT_SUCCESS) {
+  str2int_errno resultCode = str2uint16(&out, buffer);
+  if (resultCode == STR2INT_SUCCESS) {
     currentMenuValue = out;
+  } else if (resultCode == STR2INT_OVERFLOW) {
+    buffer[5 - place] = '0';
+    resultCode = str2uint16(&out, buffer);
+    
+    if (resultCode == STR2INT_SUCCESS) {
+      currentMenuValue = out;
+    }
   }
 }
 
