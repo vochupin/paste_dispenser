@@ -5,10 +5,10 @@
 #include <TM1638plus.h> //include the library
 #include "settings.h"
 
-//STR2INT errors
-#define STR2INT_SUCCESS         0
-#define STR2INT_INCONVERTIBLE   1
-#define STR2INT_OVERFLOW        2
+// STR2INT errors
+#define STR2INT_SUCCESS 0
+#define STR2INT_INCONVERTIBLE 1
+#define STR2INT_OVERFLOW 2
 typedef uint8_t str2int_errno;
 
 // Menu states
@@ -47,16 +47,15 @@ TM1638plus tm(STROBE_TM, CLOCK_TM, DIO_TM, high_freq);
 
 char buffer[40];
 
-uint16_t pressureDelay = 50;
-uint16_t pauseDelay = 10;
-uint16_t atmoDelay = 50;
+Settings* settings;
 
 uint16_t currentMenuValue = 0;
 
 uint8_t menuState = MST_PRESSURE_DELAY;
 uint8_t oldBtns = 0;
 
-void setup() {
+void setup()
+{
   pinMode(PRESSURE_RELAY, OUTPUT);
   pinMode(ATMO_RELAY, OUTPUT);
 
@@ -65,10 +64,11 @@ void setup() {
 
   tm.displayBegin();
 
-  readSettings();
+  settings = readSettings();
 }
 
-void loop() {
+void loop()
+{
   showMenu();
 
   // digitalWrite(PRESSURE_RELAY, HIGH);
@@ -84,49 +84,67 @@ void loop() {
   // delay(500);
 }
 
-void showMenu() {
+void showMenu()
+{
   const char *menuPrefix = "???";
 
-  switch (menuState) {
+  switch (menuState)
+  {
   case MST_PRESSURE_DELAY:
     menuPrefix = "Pd ";
-    currentMenuValue = pressureDelay;
+    currentMenuValue = settings->pressureDelay;
     break;
   case MST_PAUSE:
     menuPrefix = "PA ";
-    currentMenuValue = pauseDelay;
+    currentMenuValue = settings->pauseDelay;
     break;
   case MST_ATMO_DELAY:
     menuPrefix = "Ad ";
-    currentMenuValue = atmoDelay;
+    currentMenuValue = settings->atmoDelay;
     break;
   }
 
   uint8_t btns = tm.readButtons();
 
-  if (oldBtns == 0) {
-    if (btns & KEY_PRESSURE_DELAY) {
+  if (oldBtns == 0)
+  {
+    if (btns & KEY_PRESSURE_DELAY)
+    {
       menuState = MST_PRESSURE_DELAY;
-      currentMenuValue = pressureDelay;
-    } else if (btns & KEY_PAUSE) {
+      currentMenuValue = settings->pressureDelay;
+    }
+    else if (btns & KEY_PAUSE)
+    {
       menuState = MST_PAUSE;
-      currentMenuValue = pauseDelay;
-    } else if (btns & KEY_ATMO_DELAY) {
+      currentMenuValue = settings->pauseDelay;
+    }
+    else if (btns & KEY_ATMO_DELAY)
+    {
       menuState = MST_ATMO_DELAY;
-      currentMenuValue = atmoDelay;
-    } else if (btns & KEY_10_5) {
+      currentMenuValue = settings->atmoDelay;
+    }
+    else if (btns & KEY_10_5)
+    {
       changeDecimalPlace(5);
       updateFromCurrentValue();
-    } else if (btns & KEY_10_4) {
+    }
+    else if (btns & KEY_10_4)
+    {
       changeDecimalPlace(4);
       updateFromCurrentValue();
-    } else if (btns & KEY_10_3) {
+    }
+    else if (btns & KEY_10_3)
+    {
       changeDecimalPlace(3);
       updateFromCurrentValue();
-    } else if (btns & KEY_10_2) {
+    }
+    else if (btns & KEY_10_2)
+    {
       changeDecimalPlace(2);
       updateFromCurrentValue();
-    } else if (btns & KEY_10_1) {
+    }
+    else if (btns & KEY_10_1)
+    {
       changeDecimalPlace(1);
       updateFromCurrentValue();
     }
@@ -140,14 +158,18 @@ void showMenu() {
   delay(100);
 }
 
-void changeDecimalPlace(uint8_t place) {
+void changeDecimalPlace(uint8_t place)
+{
   sprintf(buffer, "%05u", currentMenuValue);
-  
+
   char symbol = buffer[5 - place];
 
-  if (symbol == '9') {
+  if (symbol == '9')
+  {
     symbol = '0';
-  } else {
+  }
+  else
+  {
     symbol++;
   }
 
@@ -155,42 +177,49 @@ void changeDecimalPlace(uint8_t place) {
 
   uint16_t out = 0;
   str2int_errno resultCode = str2uint16(&out, buffer);
-  if (resultCode == STR2INT_SUCCESS) {
+  if (resultCode == STR2INT_SUCCESS)
+  {
     currentMenuValue = out;
-  } else if (resultCode == STR2INT_OVERFLOW) {
+  }
+  else if (resultCode == STR2INT_OVERFLOW)
+  {
     buffer[5 - place] = '0';
     resultCode = str2uint16(&out, buffer);
-    
-    if (resultCode == STR2INT_SUCCESS) {
+
+    if (resultCode == STR2INT_SUCCESS)
+    {
       currentMenuValue = out;
     }
   }
 }
 
-void updateFromCurrentValue() {
-  switch (menuState) {
+void updateFromCurrentValue()
+{
+  switch (menuState)
+  {
   case MST_PRESSURE_DELAY:
-    pressureDelay = currentMenuValue;
+    settings->pressureDelay = currentMenuValue;
     break;
   case MST_PAUSE:
-    pauseDelay = currentMenuValue;
+    settings->pauseDelay = currentMenuValue;
     break;
   case MST_ATMO_DELAY:
-    atmoDelay = currentMenuValue;
+    settings->atmoDelay = currentMenuValue;
     break;
   }
 }
 
-str2int_errno str2uint16(uint16_t *out, char *s) {
-    char *end;
-    if (s[0] == '\0' || isspace(s[0]))
-        return STR2INT_INCONVERTIBLE;
-    errno = 0;
-    long l = strtol(s, &end, 10);
-    if (l > UINT_MAX || (errno == ERANGE && l == LONG_MAX))
-        return STR2INT_OVERFLOW;
-    if (*end != '\0')
-        return STR2INT_INCONVERTIBLE;
-    *out = l;
-    return STR2INT_SUCCESS;
+str2int_errno str2uint16(uint16_t *out, char *s)
+{
+  char *end;
+  if (s[0] == '\0' || isspace(s[0]))
+    return STR2INT_INCONVERTIBLE;
+  errno = 0;
+  long l = strtol(s, &end, 10);
+  if (l > UINT_MAX || (errno == ERANGE && l == LONG_MAX))
+    return STR2INT_OVERFLOW;
+  if (*end != '\0')
+    return STR2INT_INCONVERTIBLE;
+  *out = l;
+  return STR2INT_SUCCESS;
 }
